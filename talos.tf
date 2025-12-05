@@ -31,7 +31,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
   node                        = each.value.ipAddress
   config_patches = [
     templatefile(local.controlplane_config, {
-      hostname = each.value.hostname
+      hostname = proxmox_vm_qemu.talos_CP_node[each.key].name
       ip_address = "${each.value.ipAddress}/${var.ip_config.CIDR}"
       install_image = var.talos_image_url
       vip = var.VIP

@@ -34,7 +34,6 @@ variable "worker_config" {
 variable "controlplane_nodes"  {
   description = "map of the cp nodes"
   type = map(object({
-    hostname= string
     ipAddress = string
     vmid = number
   }))

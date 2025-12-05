@@ -1,8 +1,9 @@
 resource "proxmox_vm_qemu" "talos_CP_node" {
   for_each    = var.controlplane_nodes
   vmid        = each.value.vmid
-  name        = each.value.hostname
+  name        = each.key
   ipconfig0   = "ip=${each.value.ipAddress}/${var.ip_config.CIDR},gw=${var.ip_config.gateway}"
+
 
   boot        = "order=scsi0;ide0"
   machine     = "q35"
@@ -54,6 +55,8 @@ resource "proxmox_vm_qemu" "talos_CP_node" {
     storage = var.vm-specs.storage.pool
     pre_enrolled_keys = true
   }
+
+
 }
 resource "proxmox_vm_qemu" "talos_workers" {
   count       = var.workers.quantity
@@ -111,4 +114,5 @@ resource "proxmox_vm_qemu" "talos_workers" {
     storage = var.vm-specs.storage.pool
     pre_enrolled_keys = true
   }
+
 }
