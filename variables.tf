@@ -47,11 +47,11 @@ variable "vm-specs" {
       pool = string
     })
     cpu = object({
-      cores = number
-      #type = optional(string)
+      cores = optional(number, 4)
+      type = optional(string, "host")
     })
     memory = object({
-      size = number
+      size = optional(number, 4096)
     })
     install_disk = string
     target_node = string
@@ -72,5 +72,5 @@ locals {
   worker_config = coalesce(var.worker_config, "${path.module}/template/worker.yaml")
   controlplane_config = coalesce(var.controlplane_config, "${path.module}/template/controlplane.yaml")
 
-  worker_name_prefix = coalesce(var.workers.name-prefix, "$(var.cluster_name)-worker")
+  worker_name_prefix = coalesce(var.workers.name-prefix, "${var.cluster_name}-worker")
 }
