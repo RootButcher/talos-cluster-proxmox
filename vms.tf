@@ -58,7 +58,7 @@ resource "proxmox_vm_qemu" "talos_CP_node" {
 resource "proxmox_vm_qemu" "talos_workers" {
   count       = var.workers.quantity
   vmid        = var.workers.vmid-start + count.index + 1
-  name        = "${var.workers.name-prefix}-${count.index + 1}"
+  name        = "${local.worker_name_prefix}-${count.index + 1}"
   ipconfig0   = "ip=dhcp"
 
   boot        = "order=scsi0;ide0"

@@ -1,13 +1,12 @@
 module "talos_cluster" {
   source = "github.com/RootButcher/talos-cluster-proxmox.git"
 
-  cluster_name = "temp"
+  cluster_name = "HA-cluster"
   VIP = "10.0.11.200"
   ip_config = {
     gateway = "10.0.11.1"
     CIDR = 24
   }
-
   controlplane_nodes = {
     Cordova = {
       hostname = "cordova"
@@ -28,7 +27,6 @@ module "talos_cluster" {
   workers = {
     quantity = 2
     vmid-start = 500
-    name-prefix = "talos-worker"
   }
 
   vm-specs = {

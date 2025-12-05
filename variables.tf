@@ -9,8 +9,8 @@ variable "VIP" {
 variable "talos_image_url" {
   description = "talos image factory"
   type    = string
-  #default = "factory.talos.dev/nocloud-installer/5b7d2ab1fbe685e4e9a28d2d204049be045e1eae07973331aaf16b91824609c7:v1.11.5"
   default = "factory.talos.dev/nocloud-installer/d3dc673627e9b94c6cd4122289aa52c2484cddb31017ae21b75309846e257d30:v1.11.5"
+  #TODO generate from talos image factory
 }
 variable "ip_config" {
   description = "Configuration for ip configuration"
@@ -39,16 +39,6 @@ variable "controlplane_nodes"  {
     vmid = number
   }))
 }
-#variable "worker_nodes"  {
-#  description = "map of the worker nodes"
-#  type = map(object({
-#    hostname= string
-#    ipAddress = string
-#    vmid = number
-#    install_disk= string
-#    image= string
-# }))
-#}
 variable "vm-specs" {
   description = "basic vm config options"
   type = object({
@@ -74,11 +64,13 @@ variable "bootstrap_iso" {
 variable "workers" {
   type = object({
     quantity = number
-    name-prefix = string
+    name-prefix = optional(string)
     vmid-start = number
   })
 }
 locals {
   worker_config = coalesce(var.worker_config, "${path.module}/template/worker.yaml")
   controlplane_config = coalesce(var.controlplane_config, "${path.module}/template/controlplane.yaml")
+
+  worker_name_prefix = coalesce(var.workers.name-prefix, "$(var.cluster_name)-worker")
 }
