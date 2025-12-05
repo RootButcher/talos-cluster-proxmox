@@ -1,0 +1,30 @@
+machine:
+  install:
+    image: ${install_image}
+  network:
+    hostname: ${hostname}
+    interfaces:
+     - deviceSelector:
+         physical: true
+    #    addresses:
+    #      - {ip_address}
+        #routes:
+        #  - network: {network}
+        #    gateway: {network_gateway}
+        #vip:
+        #  ip: {vip}
+       dhcp: true
+#cluster:
+ # allowSchedulingOnControlPlanes: false
+ # network:
+ #   cni:
+ #     name: none
+ # proxy:
+ #   disabled: true
+ # inlineManifests:
+ #   - name: gateway-api
+ #     contents: |
+ #       {indent(8, gateway_api_manifest)}
+ #   - name: cilium
+ #     contents: |
+ #       {indent(8, cilium_manifest)}
