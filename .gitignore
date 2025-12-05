@@ -1,3 +1,5 @@
 /.idea/
-/examples/HA_cluster/.terraform/
+/examples/HA_cluster/.terraform/*
 /examples/HA_cluster/.terraform.lock.hcl
+/.terraform/*
+/.terraform.lock.hcl
