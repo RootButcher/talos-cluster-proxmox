@@ -16,9 +16,9 @@ variable "ip_config" {
   description = "Configuration for ip configuration"
   type = object({
     gateway = string
-    CIDR = number
-    DNS = optional(string)
-    Vlan = optional(number)
+    CIDR = optional(number, 24)
+    DNS = optional(string) #TODO implement
+    Vlan = optional(number) #TODO implement
   })
 }
 variable "controlplane_config"{
@@ -53,7 +53,7 @@ variable "vm-specs" {
     memory = object({
       size = optional(number, 4096)
     })
-    install_disk = string
+    install_disk = optional(string, "/dev/sda")
     target_node = string
   })
 }
