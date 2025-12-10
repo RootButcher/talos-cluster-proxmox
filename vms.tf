@@ -14,6 +14,14 @@ resource "proxmox_vm_qemu" "talos_CP_node" {
   additional_wait = 20
   target_node     = var.vm-specs.target_node
   memory          = var.vm-specs.memory.size
+
+  tags = "TOFU"
+  startup_shutdown{
+    order = -1
+    shutdown_timeout = -1
+    startup_delay = -1
+  }
+
   disks {
     ide {
       ide0 {
@@ -73,6 +81,15 @@ resource "proxmox_vm_qemu" "talos_workers" {
   additional_wait = 20
   target_node     = var.vm-specs.target_node
   memory          = var.vm-specs.memory.size
+
+  #added to prevent unnecessary state modifications
+  tags = "TOFU"
+  startup_shutdown{
+    order = -1
+    shutdown_timeout = -1
+    startup_delay = -1
+  }
+
   disks {
     ide {
       ide0 {
