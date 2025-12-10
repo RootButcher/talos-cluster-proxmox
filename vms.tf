@@ -1,19 +1,19 @@
 resource "proxmox_vm_qemu" "talos_CP_node" {
-  for_each    = var.controlplane_nodes
-  vmid        = each.value.vmid
-  name        = each.key
-  ipconfig0   = "ip=${each.value.ipAddress}/${var.ip_config.CIDR},gw=${var.ip_config.gateway}"
+  for_each  = var.controlplane_nodes
+  vmid      = each.value.vmid
+  name      = each.key
+  ipconfig0 = "ip=${each.value.ipAddress}/${var.ip_config.CIDR},gw=${var.ip_config.gateway}"
 
 
-  boot        = "order=scsi0;ide0"
-  machine     = "q35"
-  bios        = "ovmf"
-  os_type     = "cloud-init"
-  scsihw      = "virtio-scsi-pci"
-  agent       = 1
+  boot            = "order=scsi0;ide0"
+  machine         = "q35"
+  bios            = "ovmf"
+  os_type         = "cloud-init"
+  scsihw          = "virtio-scsi-pci"
+  agent           = 1
   additional_wait = 20
-  target_node = var.vm-specs.target_node
-  memory      = var.vm-specs.memory.size
+  target_node     = var.vm-specs.target_node
+  memory          = var.vm-specs.memory.size
   disks {
     ide {
       ide0 {
@@ -25,12 +25,12 @@ resource "proxmox_vm_qemu" "talos_CP_node" {
     scsi {
       scsi0 {
         disk {
-          size = "${var.vm-specs.storage.size}G"
+          size    = "${var.vm-specs.storage.size}G"
           storage = var.vm-specs.storage.pool
         }
       }
       scsi1 {
-        cloudinit{
+        cloudinit {
           storage = var.vm-specs.storage.pool
         }
       }
@@ -39,8 +39,8 @@ resource "proxmox_vm_qemu" "talos_CP_node" {
 
   # CPU Configuration
   cpu {
-    type    = "host"
-    cores   = var.vm-specs.cpu.cores
+    type  = "host"
+    cores = var.vm-specs.cpu.cores
   }
 
   # Network Configuration
@@ -51,28 +51,28 @@ resource "proxmox_vm_qemu" "talos_CP_node" {
     bridge = "vmbr0"
   }
   efidisk {
-    efitype = "2m"
-    storage = var.vm-specs.storage.pool
+    efitype           = "2m"
+    storage           = var.vm-specs.storage.pool
     pre_enrolled_keys = true
   }
 
 
 }
 resource "proxmox_vm_qemu" "talos_workers" {
-  count       = var.workers.quantity
-  vmid        = var.workers.vmid-start + count.index + 1
-  name        = "${local.worker_name_prefix}-${count.index + 1}"
-  ipconfig0   = "ip=dhcp"
+  count     = var.workers.quantity
+  vmid      = var.workers.vmid-start + count.index + 1
+  name      = "${local.worker_name_prefix}-${count.index + 1}"
+  ipconfig0 = "ip=dhcp"
 
-  boot        = "order=scsi0;ide0"
-  machine     = "q35"
-  bios        = "ovmf"
-  os_type     = "cloud-init"
-  scsihw      = "virtio-scsi-pci"
-  agent       = 1
+  boot            = "order=scsi0;ide0"
+  machine         = "q35"
+  bios            = "ovmf"
+  os_type         = "cloud-init"
+  scsihw          = "virtio-scsi-pci"
+  agent           = 1
   additional_wait = 20
-  target_node = var.vm-specs.target_node
-  memory      = var.vm-specs.memory.size
+  target_node     = var.vm-specs.target_node
+  memory          = var.vm-specs.memory.size
   disks {
     ide {
       ide0 {
@@ -84,12 +84,12 @@ resource "proxmox_vm_qemu" "talos_workers" {
     scsi {
       scsi0 {
         disk {
-          size = "${var.vm-specs.storage.size}G"
+          size    = "${var.vm-specs.storage.size}G"
           storage = var.vm-specs.storage.pool
         }
       }
       scsi1 {
-        cloudinit{
+        cloudinit {
           storage = var.vm-specs.storage.pool
         }
       }
@@ -98,8 +98,8 @@ resource "proxmox_vm_qemu" "talos_workers" {
 
   # CPU Configuration
   cpu {
-    type    = "host"
-    cores   = var.vm-specs.cpu.cores
+    type  = "host"
+    cores = var.vm-specs.cpu.cores
   }
 
   # Network Configuration
@@ -110,8 +110,8 @@ resource "proxmox_vm_qemu" "talos_workers" {
     bridge = "vmbr0"
   }
   efidisk {
-    efitype = "2m"
-    storage = var.vm-specs.storage.pool
+    efitype           = "2m"
+    storage           = var.vm-specs.storage.pool
     pre_enrolled_keys = true
   }
 

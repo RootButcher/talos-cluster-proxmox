@@ -1,41 +1,41 @@
 variable "cluster_name" {
   description = "name of talos cluster"
-  type = string
+  type        = string
 }
 variable "VIP" {
   description = "VIP IP address"
-  type    = string
+  type        = string
 }
 variable "talos_image_url" {
   description = "talos image factory"
-  type    = string
-  default = "factory.talos.dev/nocloud-installer/d3dc673627e9b94c6cd4122289aa52c2484cddb31017ae21b75309846e257d30:v1.11.5"
+  type        = string
+  default     = "factory.talos.dev/nocloud-installer/d3dc673627e9b94c6cd4122289aa52c2484cddb31017ae21b75309846e257d30:v1.11.5"
   #TODO generate from talos image factory
 }
 variable "ip_config" {
   description = "Configuration for ip configuration"
   type = object({
     gateway = string
-    CIDR = optional(number, 24)
-    DNS = optional(string) #TODO implement
-    Vlan = optional(number) #TODO implement
+    CIDR    = optional(number, 24)
+    DNS     = optional(string) #TODO implement
+    Vlan    = optional(number) #TODO implement
   })
 }
-variable "controlplane_config"{
+variable "controlplane_config" {
   description = "template yaml to apply to controlplane if not defined uses module local template"
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 variable "worker_config" {
   description = "template yaml to apply to worker if not defined uses module local template"
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
-variable "controlplane_nodes"  {
+variable "controlplane_nodes" {
   description = "map of the cp nodes"
   type = map(object({
     ipAddress = string
-    vmid = number
+    vmid      = number
   }))
 }
 variable "vm-specs" {
@@ -47,28 +47,28 @@ variable "vm-specs" {
     })
     cpu = object({
       cores = optional(number, 4)
-      type = optional(string, "host")
+      type  = optional(string, "host")
     })
     memory = object({
       size = optional(number, 4096)
     })
     install_disk = optional(string, "/dev/sda")
-    target_node = string
+    target_node  = string
   })
 }
 variable "bootstrap_iso" {
-  type = string
+  type    = string
   default = "local:iso/talos-amd64.iso"
 }
 variable "workers" {
   type = object({
-    quantity = number
+    quantity    = number
     name-prefix = optional(string)
-    vmid-start = number
+    vmid-start  = number
   })
 }
 locals {
-  worker_config = coalesce(var.worker_config, "${path.module}/template/worker.yaml")
+  worker_config       = coalesce(var.worker_config, "${path.module}/template/worker.yaml")
   controlplane_config = coalesce(var.controlplane_config, "${path.module}/template/controlplane.yaml")
 
   worker_name_prefix = coalesce(var.workers.name-prefix, "${var.cluster_name}-worker")
