@@ -15,7 +15,7 @@ resource "proxmox_vm_qemu" "talos_CP_node" {
   target_node     = var.vm-specs.target_node
   memory          = var.vm-specs.memory.size
 
-  tags = "TOFU"
+  tags = "tofu"
   startup_shutdown{
     order = -1
     shutdown_timeout = -1
@@ -83,7 +83,7 @@ resource "proxmox_vm_qemu" "talos_workers" {
   memory          = var.vm-specs.memory.size
 
   #added to prevent unnecessary state modifications
-  tags = "TOFU"
+  tags = "tofu"
   startup_shutdown{
     order = -1
     shutdown_timeout = -1
