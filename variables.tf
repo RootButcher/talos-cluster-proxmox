@@ -65,6 +65,7 @@ variable "workers" {
     quantity    = number
     name-prefix = optional(string)
     vmid-start  = number
+    pci         = string
   })
 }
 locals {

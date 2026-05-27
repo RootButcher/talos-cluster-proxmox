@@ -132,4 +132,14 @@ resource "proxmox_vm_qemu" "talos_workers" {
     pre_enrolled_keys = true
   }
 
+  pcis {
+    pci0 {
+      mapping {
+        mapping_id = var.workers.pci
+        pcie = true
+        primary_gpu = false
+        rombar = true
+      }
+    }
+  }
 }
