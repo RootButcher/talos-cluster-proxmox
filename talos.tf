@@ -90,9 +90,9 @@ resource "talos_machine_bootstrap" "this" {
   client_configuration = talos_machine_secrets.this.client_configuration
   node                 = [for v in var.controlplane_nodes : v.ipAddress][0]
 }
-# TODO fix other race condition
-/* talos_cluster_health disabled — nodes stay NotReady until Cilium (cni: none)
-   re-enable after initial bootstrap to use as a post-deploy sanity check
+/* talos_cluster_health disabled — nodes stay NotReady until Cilium (cni: none).
+   Re-enable post-bootstrap as a sanity check, or drop entirely once the
+   cluster-bootstrap binary owns the readiness gate.
 data "talos_cluster_health" "this" {
   depends_on = [
     talos_machine_bootstrap.this,
