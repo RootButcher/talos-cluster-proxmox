@@ -1,13 +1,27 @@
 machine:
   install:
     image: ${install_image}
+  kubelet:
+    extraMounts:
+      - destination: /etc/iscsi
+        type: bind
+        source: /var/etc/iscsi
+        options:
+          - bind
+          - rshared
+          - rw
   network:
     hostname: ${hostname}
+    nameservers:
+      - ${nameserver}
     interfaces:
       - deviceSelector:
           physical: true
         addresses:
           - ${ip_address}
+        routes:
+          - network: 0.0.0.0/0
+            gateway: ${gateway}
         vip:
           ip: ${vip}
 cluster:

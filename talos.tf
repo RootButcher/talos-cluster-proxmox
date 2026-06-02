@@ -64,6 +64,8 @@ resource "talos_machine_configuration_apply" "controlplane" {
     templatefile(local.controlplane_config, {
       hostname      = proxmox_vm_qemu.talos_CP_node[each.key].name
       ip_address    = "${each.value.ipAddress}/${var.ip_config.CIDR}"
+      gateway       = var.ip_config.gateway
+      nameserver    = coalesce(var.ip_config.DNS, var.ip_config.gateway)
       install_image = local.install_image
       vip           = var.VIP
 

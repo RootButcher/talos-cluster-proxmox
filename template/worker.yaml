@@ -1,6 +1,15 @@
 machine:
   install:
     image: ${install_image}
+  kubelet:
+    extraMounts:
+      - destination: /etc/iscsi
+        type: bind
+        source: /var/etc/iscsi
+        options:
+          - bind
+          - rshared
+          - rw
   network:
     hostname: ${hostname}
     interfaces:

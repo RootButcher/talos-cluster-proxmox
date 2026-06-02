@@ -30,7 +30,7 @@ variable "ip_config" {
   type = object({
     gateway = string
     CIDR    = optional(number, 24)
-    DNS     = optional(string) #TODO implement
+    DNS     = optional(string)
     Vlan    = optional(number) #TODO implement
   })
 }
