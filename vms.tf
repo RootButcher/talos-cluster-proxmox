@@ -16,12 +16,14 @@ resource "proxmox_vm_qemu" "talos_CP_node" {
   memory          = var.vm-specs.memory.size
 
   tags = "tofu"
-  startup_shutdown{
-    order = -1
+  #noinspection HCLUnknownBlockType
+  startup_shutdown {
+    order            = -1
     shutdown_timeout = -1
-    startup_delay = -1
+    startup_delay    = -1
   }
 
+  #noinspection HCLUnknownBlockType
   disks {
     ide {
       ide0 {
@@ -42,10 +44,21 @@ resource "proxmox_vm_qemu" "talos_CP_node" {
           storage = var.vm-specs.storage.pool
         }
       }
+      # Optional extra disk for Rook-Ceph (surfaces as /dev/sdb in Talos).
+      dynamic "scsi2" {
+        for_each = var.vm-specs.rook_disk != null ? [var.vm-specs.rook_disk] : []
+        content {
+          disk {
+            size    = "${scsi2.value.size}G"
+            storage = scsi2.value.pool
+          }
+        }
+      }
     }
   }
 
   # CPU Configuration
+  #noinspection HCLUnknownBlockType
   cpu {
     type  = "host"
     cores = var.vm-specs.cpu.cores
@@ -58,6 +71,7 @@ resource "proxmox_vm_qemu" "talos_CP_node" {
     model  = "virtio"
     bridge = "vmbr0"
   }
+  #noinspection HCLUnknownBlockType
   efidisk {
     efitype           = "2m"
     storage           = var.vm-specs.storage.pool
@@ -84,12 +98,14 @@ resource "proxmox_vm_qemu" "talos_workers" {
 
   #added to prevent unnecessary state modifications
   tags = "tofu"
-  startup_shutdown{
-    order = -1
+  #noinspection HCLUnknownBlockType
+  startup_shutdown {
+    order            = -1
     shutdown_timeout = -1
-    startup_delay = -1
+    startup_delay    = -1
   }
 
+  #noinspection HCLUnknownBlockType
   disks {
     ide {
       ide0 {
@@ -110,10 +126,21 @@ resource "proxmox_vm_qemu" "talos_workers" {
           storage = var.vm-specs.storage.pool
         }
       }
+      # Optional extra disk for Rook-Ceph (surfaces as /dev/sdb in Talos).
+      dynamic "scsi2" {
+        for_each = var.vm-specs.rook_disk != null ? [var.vm-specs.rook_disk] : []
+        content {
+          disk {
+            size    = "${scsi2.value.size}G"
+            storage = scsi2.value.pool
+          }
+        }
+      }
     }
   }
 
   # CPU Configuration
+  #noinspection HCLUnknownBlockType
   cpu {
     type  = "host"
     cores = var.vm-specs.cpu.cores
@@ -126,19 +153,21 @@ resource "proxmox_vm_qemu" "talos_workers" {
     model  = "virtio"
     bridge = "vmbr0"
   }
+  #noinspection HCLUnknownBlockType
   efidisk {
     efitype           = "2m"
     storage           = var.vm-specs.storage.pool
     pre_enrolled_keys = true
   }
 
+  #noinspection HCLUnknownBlockType
   pcis {
     pci0 {
       mapping {
-        mapping_id = var.workers.pci
-        pcie = true
+        mapping_id  = var.workers.pci
+        pcie        = true
         primary_gpu = false
-        rombar = true
+        rombar      = true
       }
     }
   }

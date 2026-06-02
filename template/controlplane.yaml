@@ -1,6 +1,5 @@
 machine:
   install:
-    #disk: {install_disk}
     image: ${install_image}
   network:
     hostname: ${hostname}
@@ -9,22 +8,12 @@ machine:
           physical: true
         addresses:
           - ${ip_address}
-        #routes:
-        #  - network: {network}
-        #    gateway: {network_gateway}
         vip:
           ip: ${vip}
 cluster:
   allowSchedulingOnControlPlanes: false
- # network:
- #   cni:
- #     name: none
- # proxy:
- #   disabled: true
- # inlineManifests:
- #   - name: gateway-api
- #     contents: |
- #       {indent(8, gateway_api_manifest)}
- #   - name: cilium
- #     contents: |
- #       {indent(8, cilium_manifest)}
+  network:
+    cni:
+      name: none
+  proxy:
+    disabled: true

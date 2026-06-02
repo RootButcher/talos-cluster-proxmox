@@ -1,5 +1,32 @@
 
 
+data "talos_image_factory_extensions_versions" "this" {
+  talos_version = var.talos_version
+  filters = {
+    names = var.talos_extensions
+  }
+}
+
+resource "talos_image_factory_schematic" "this" {
+  schematic = yamlencode({
+    customization = {
+      systemExtensions = {
+        officialExtensions = data.talos_image_factory_extensions_versions.this.extensions_info[*].name
+      }
+    }
+  })
+}
+
+data "talos_image_factory_urls" "this" {
+  talos_version = var.talos_version
+  schematic_id  = talos_image_factory_schematic.this.id
+  platform      = "nocloud"
+}
+
+locals {
+  install_image = data.talos_image_factory_urls.this.urls.installer
+}
+
 resource "talos_machine_secrets" "this" {}
 
 data "talos_machine_configuration" "controlplane" {
@@ -22,6 +49,10 @@ data "talos_client_configuration" "this" {
   cluster_name         = var.cluster_name
   client_configuration = talos_machine_secrets.this.client_configuration
   endpoints            = concat([var.VIP], [for v in var.controlplane_nodes : v.ipAddress])
+  nodes = concat(
+    [for v in var.controlplane_nodes : v.ipAddress],
+    [for w in proxmox_vm_qemu.talos_workers : w.default_ipv4_address],
+  )
 }
 resource "talos_machine_configuration_apply" "controlplane" {
   depends_on                  = [proxmox_vm_qemu.talos_CP_node]
@@ -33,7 +64,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
     templatefile(local.controlplane_config, {
       hostname      = proxmox_vm_qemu.talos_CP_node[each.key].name
       ip_address    = "${each.value.ipAddress}/${var.ip_config.CIDR}"
-      install_image = var.talos_image_url
+      install_image = local.install_image
       vip           = var.VIP
 
     })
@@ -49,7 +80,7 @@ resource "talos_machine_configuration_apply" "worker" {
     templatefile(local.worker_config, {
       hostname = proxmox_vm_qemu.talos_workers[count.index].name
       #ip_address = "${proxmox_vm_qemu.talos_workers[count.index].default_ipv4_address}/${var.ip_config.CIDR}"
-      install_image = var.talos_image_url
+      install_image = local.install_image
     })
   ]
 }
@@ -59,9 +90,28 @@ resource "talos_machine_bootstrap" "this" {
   client_configuration = talos_machine_secrets.this.client_configuration
   node                 = [for v in var.controlplane_nodes : v.ipAddress][0]
 }
+# TODO fix other race condition
+/* talos_cluster_health disabled — nodes stay NotReady until Cilium (cni: none)
+   re-enable after initial bootstrap to use as a post-deploy sanity check
+data "talos_cluster_health" "this" {
+  depends_on = [
+    talos_machine_bootstrap.this,
+    talos_machine_configuration_apply.worker,
+  ]
+  client_configuration = talos_machine_secrets.this.client_configuration
+  control_plane_nodes  = [for v in var.controlplane_nodes : v.ipAddress]
+  worker_nodes         = [for w in proxmox_vm_qemu.talos_workers : w.default_ipv4_address]
+  endpoints            = [var.VIP]
+  timeouts = {
+    read = "5m"
+  }
+}
+*/
 
 resource "talos_cluster_kubeconfig" "this" {
-  depends_on           = [talos_machine_bootstrap.this]
+  depends_on = [
+    talos_machine_bootstrap.this,
+  ]
   client_configuration = talos_machine_secrets.this.client_configuration
   node                 = [for k, v in var.controlplane_nodes : v.ipAddress][0]
   endpoint             = var.VIP

@@ -6,11 +6,24 @@ variable "VIP" {
   description = "VIP IP address"
   type        = string
 }
-variable "talos_image_url" {
-  description = "talos image factory"
+variable "talos_version" {
+  # WARNING: Tofu cannot upgrade Talos on running nodes.
+  # Changing this value (or var.talos_extensions) only rewrites machine.install.image
+  # in the on-node machine config — it does NOT trigger a Talos reinstall, and rebooting
+  # the node does NOT pick up the new image (Talos boots the A/B partition, not the URL).
+  # To roll the new image onto a live cluster, run `talosctl upgrade --image=<new-url>`
+  # per node (workers in parallel, CP serially with etcd checks between).
+  # A `tofu destroy` + `tofu apply` rebuild also picks up the new image — that's the only
+  # path Tofu alone can take you down.
+  description = "Talos version baked into the installer schematic (e.g. v1.11.5). See WARNING in this file: Tofu cannot upgrade running nodes; use talosctl upgrade or destroy+apply."
   type        = string
-  default     = "factory.talos.dev/nocloud-installer/d3dc673627e9b94c6cd4122289aa52c2484cddb31017ae21b75309846e257d30:v1.11.5"
-  #TODO generate from talos image factory
+}
+variable "talos_extensions" {
+  # WARNING: silent fail. Unknown names are silently dropped by the factory data source filter
+  # (talos_image_factory_extensions_versions) — they do NOT error at plan time. Verify the
+  # rendered schematic body in `tofu plan` includes every extension you listed before applying.
+  description = "Talos system extensions to bake into the installer image. Short names (e.g. \"iscsi-tools\"), looked up against the image factory catalog for var.talos_version. Names that don't match the catalog are silently dropped."
+  type        = list(string)
 }
 variable "ip_config" {
   description = "Configuration for ip configuration"
@@ -54,6 +67,12 @@ variable "vm-specs" {
     })
     install_disk = optional(string, "/dev/sda")
     target_node  = string
+    # Optional extra disk added as scsi2 on every node. Surfaces as /dev/sdb in Talos.
+    # Used by Rook-Ceph (deviceFilter: ^sdb$). Omit to skip.
+    rook_disk = optional(object({
+      size = number # GB
+      pool = string
+    }))
   })
 }
 variable "bootstrap_iso" {
