@@ -23,6 +23,7 @@ data "talos_image_factory_urls" "this" {
   platform      = "nocloud"
 }
 
+#proxmox iso
 locals {
   install_image = data.talos_image_factory_urls.this.urls.installer
 }
@@ -93,8 +94,7 @@ resource "talos_machine_bootstrap" "this" {
   node                 = [for v in var.controlplane_nodes : v.ipAddress][0]
 }
 /* talos_cluster_health disabled — nodes stay NotReady until Cilium (cni: none).
-   Re-enable post-bootstrap as a sanity check, or drop entirely once the
-   cluster-bootstrap binary owns the readiness gate.
+
 data "talos_cluster_health" "this" {
   depends_on = [
     talos_machine_bootstrap.this,
