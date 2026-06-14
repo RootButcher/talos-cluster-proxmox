@@ -1,8 +1,6 @@
 machine:
   install:
     image: ${install_image}
-    extraKernelArgs:
-      - "talos.logging.kernel=tcp://10.0.11.105:5044/"
   logging:
     destinations:
       - endpoint: "tcp://10.0.11.105:5514/"
