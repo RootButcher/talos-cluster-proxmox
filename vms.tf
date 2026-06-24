@@ -75,7 +75,7 @@ resource "proxmox_vm_qemu" "talos_CP_node" {
   efidisk {
     efitype           = "2m"
     storage           = var.vm-specs.storage.pool
-    pre_enrolled_keys = true
+    pre_enrolled_keys = false
   }
 
 
@@ -157,7 +157,7 @@ resource "proxmox_vm_qemu" "talos_workers" {
   efidisk {
     efitype           = "2m"
     storage           = var.vm-specs.storage.pool
-    pre_enrolled_keys = true
+    pre_enrolled_keys = false
   }
 
   #noinspection HCLUnknownBlockType
