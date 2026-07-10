@@ -5,6 +5,8 @@ machine:
     destinations:
       - endpoint: "tcp://10.0.11.105:5514/"
         format: json_lines
+        extraTags:
+          talos-node: ${hostname}
   kubelet:
     extraMounts:
       - destination: /etc/iscsi
@@ -30,6 +32,12 @@ machine:
           ip: ${vip}
 cluster:
   allowSchedulingOnControlPlanes: false
+  controllerManager:
+    extraArgs:
+      bind-address: 0.0.0.0
+  scheduler:
+    extraArgs:
+      bind-address: 0.0.0.0
   network:
     cni:
       name: none

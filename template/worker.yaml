@@ -5,6 +5,8 @@ machine:
     destinations:
       - endpoint: "tcp://10.0.11.105:5514/"
         format: json_lines
+        extraTags:
+          talos-node: ${hostname}
   kubelet:
     extraMounts:
       - destination: /etc/iscsi
